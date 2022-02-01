@@ -9,7 +9,7 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 )
-camera.position.z = 2
+camera.position.z = 15
 
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -17,14 +17,29 @@ document.body.appendChild(renderer.domElement)
 
 new OrbitControls(camera, renderer.domElement)
 
-const geometry = new THREE.BoxGeometry()
-const material = new THREE.MeshBasicMaterial({
-    color: 0x66ff00,
-    wireframe: true,
-})
+const loader = new THREE.FileLoader();
 
-const cube = new THREE.Mesh(geometry, material)
-scene.add(cube)
+loader.load("/pcl/point_00001_00000.txt", 
+	// onLoad callback
+	function ( data ) {
+		// output the text to the console
+        console.log('testing yong')
+        const lines = data.toString().split("\n")
+
+        const points = []
+
+        for(let i = 1; i < lines.length; i++)
+        {
+            const pos = lines[i].toString().split(' ')
+
+            points.push(new THREE.Vector3(Number(pos[0]), Number(pos[1]), Number(pos[2])))
+        }
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points)
+        const point = new THREE.Points(geometry, new THREE.PointsMaterial({color: 0xffffff, size:0.1}))
+        scene.add(point)
+	}
+);
 
 console.log(scene)
 
@@ -39,8 +54,8 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame(animate)
 
-    cube.rotation.x += 0.01
-    cube.rotation.y += 0.01
+    // point.rotation.x += 0.01
+    // point.rotation.y += 0.01
 
     render()
 }
