@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import Stats from 'three/examples/jsm/libs/stats.module'
 
 const scene = new THREE.Scene()
 
@@ -51,6 +52,9 @@ function onWindowResize() {
     render()
 }
 
+const stats = Stats()
+document.body.appendChild(stats.dom)
+
 function animate() {
     requestAnimationFrame(animate)
 
@@ -58,6 +62,7 @@ function animate() {
     // point.rotation.y += 0.01
 
     render()
+    stats.update()
 }
 
 function render() {
