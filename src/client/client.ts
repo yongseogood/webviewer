@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
+import { GUI } from 'dat.gui'
 
 const scene = new THREE.Scene()
 
@@ -68,6 +69,15 @@ function onWindowResize() {
 
 const stats = Stats()
 document.body.appendChild(stats.dom)
+
+const gui = new GUI()
+const pclFolder = gui.addFolder('PCL')
+var obj = { red:function(){ console.log("clicked") }};
+gui.add(obj,'red');
+pclFolder.open()
+const cameraFolder = gui.addFolder('Camera')
+cameraFolder.add(camera.position, 'z', 0, 10)
+cameraFolder.open()
 
 function animate() {
     requestAnimationFrame(animate)
