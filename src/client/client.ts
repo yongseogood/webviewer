@@ -1,8 +1,10 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
+import { GUI } from 'dat.gui'
 
 const scene = new THREE.Scene()
+scene.add(new THREE.AxesHelper(5))
 
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -18,9 +20,11 @@ document.body.appendChild(renderer.domElement)
 
 new OrbitControls(camera, renderer.domElement)
 
-const loader = new THREE.FileLoader();
+const loader = new THREE.FileLoader()
 
-const frameSize = 1
+const streamGeometry = new THREE.BufferGeometry()
+
+const frameSize = 2000
 for(let t = 0; t < frameSize; t++)
 {
     let filename = "/pcl/point_00001_0000" + String(t) + ".txt"
@@ -49,12 +53,27 @@ for(let t = 0; t < frameSize; t++)
                 points.push(new THREE.Vector3(Number(pos[0]), Number(pos[1]), Number(pos[2])))
             }
 
+            streamGeometry.setFromPoints(points)
+
             const geometry = new THREE.BufferGeometry().setFromPoints(points)
             const point = new THREE.Points(geometry, new THREE.PointsMaterial({color: 0xffffff, size:0.1}))
-            scene.add(point)
+            // scene.add(point)
         }
     );
 }
+
+const sphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true,
+})
+
+const sphereGeometry = new THREE.SphereGeometry()
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+sphere.position.x = -2
+
+const material = new THREE.PointsMaterial({color: 0xffffff, size:0.1})
+const streamPoint = new THREE.Points(streamGeometry, material)
+scene.add(streamPoint)
 
 console.log(scene)
 
@@ -68,6 +87,25 @@ function onWindowResize() {
 
 const stats = Stats()
 document.body.appendChild(stats.dom)
+
+const gui = new GUI()
+const pclFolder = gui.addFolder('PCL')
+var redObj = { red:function(){ material.color =  new THREE.Color(0xff0000) }};
+gui.add(redObj,'red');
+var blueObj = { blue:function(){ material.color =  new THREE.Color(0x0000ff) }};
+gui.add(blueObj,'blue');
+var whiteObj = { white:function(){ material.color =  new THREE.Color(0xffffff) }};
+gui.add(whiteObj,'white');
+pclFolder.open()
+const sphereFolder = gui.addFolder('Sphere')
+var onObj = { on:function(){ scene.add(sphere) }};
+gui.add(onObj,'on');
+var offObj = { off:function(){ scene.remove(sphere) }};
+gui.add(offObj,'off');
+sphereFolder.open()
+const cameraFolder = gui.addFolder('Camera')
+cameraFolder.add(camera.position, 'z', 0, 10)
+cameraFolder.open()
 
 function animate() {
     requestAnimationFrame(animate)
