@@ -62,6 +62,15 @@ for(let t = 0; t < frameSize; t++)
     );
 }
 
+const sphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true,
+})
+
+const sphereGeometry = new THREE.SphereGeometry()
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+sphere.position.x = -2
+
 const material = new THREE.PointsMaterial({color: 0xffffff, size:0.1})
 const streamPoint = new THREE.Points(streamGeometry, material)
 scene.add(streamPoint)
@@ -88,6 +97,12 @@ gui.add(blueObj,'blue');
 var whiteObj = { white:function(){ material.color =  new THREE.Color(0xffffff) }};
 gui.add(whiteObj,'white');
 pclFolder.open()
+const sphereFolder = gui.addFolder('Sphere')
+var onObj = { on:function(){ scene.add(sphere) }};
+gui.add(onObj,'on');
+var offObj = { off:function(){ scene.remove(sphere) }};
+gui.add(offObj,'off');
+sphereFolder.open()
 const cameraFolder = gui.addFolder('Camera')
 cameraFolder.add(camera.position, 'z', 0, 10)
 cameraFolder.open()
