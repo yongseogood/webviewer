@@ -4,6 +4,7 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 import { GUI } from 'dat.gui'
 
 const scene = new THREE.Scene()
+scene.add(new THREE.AxesHelper(5))
 
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -21,7 +22,7 @@ new OrbitControls(camera, renderer.domElement)
 
 const loader = new THREE.FileLoader();
 
-const frameSize = 1
+const frameSize = 10
 for(let t = 0; t < frameSize; t++)
 {
     let filename = "/pcl/point_00001_0000" + String(t) + ".txt"
