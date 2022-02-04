@@ -101,10 +101,17 @@ var whiteObj = { white:function(){ material.color =  new THREE.Color(0xffffff) }
 gui.add(whiteObj,'white');
 pclFolder.open()
 const sphereFolder = gui.addFolder('Sphere')
-var onObj = { on:function(){ scene.add(sphere) }};
-gui.add(onObj,'on');
-var offObj = { off:function(){ scene.remove(sphere) }};
-gui.add(offObj,'off');
+var checkObj = {
+    'on/off': false,
+}
+gui.add(checkObj,'on/off').listen().onFinishChange(function(value){
+    if(value)
+    {
+        scene.add(sphere)
+    } else {
+        scene.remove(sphere)
+    }
+});
 sphereFolder.open()
 const cameraFolder = gui.addFolder('Camera')
 cameraFolder.add(camera.position, 'z', 0, 10)
@@ -112,10 +119,6 @@ cameraFolder.open()
 
 function animate() {
     requestAnimationFrame(animate)
-
-    // point.rotation.x += 0.01
-    // point.rotation.y += 0.01
-
     render()
     stats.update()
 }
