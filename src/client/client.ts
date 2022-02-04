@@ -12,7 +12,9 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 )
-camera.position.z = 15
+camera.position.set(-15.0, 0.0, 5.0)
+camera.lookAt(0, 0, 0)
+camera.up.set(0, 0, 1)
 
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -70,7 +72,6 @@ const sphereMaterial = new THREE.MeshBasicMaterial({
 
 const sphereGeometry = new THREE.SphereGeometry()
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
-sphere.position.x = -2
 
 const material = new THREE.PointsMaterial({color: 0xffffff, size:0.1})
 const streamPoint = new THREE.Points(streamGeometry, material)
@@ -87,6 +88,7 @@ function onWindowResize() {
 }
 
 const stats = Stats()
+stats.dom.style.margin = "20px"
 document.body.appendChild(stats.dom)
 
 const gui = new GUI()
