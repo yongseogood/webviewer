@@ -24,7 +24,8 @@ const loader = new THREE.FileLoader()
 
 const streamGeometry = new THREE.BufferGeometry()
 
-const frameSize = 2000
+const frameSize = 2434
+// const frameSize = 100
 for(let t = 0; t < frameSize; t++)
 {
     let filename = "/pcl/point_00001_0000" + String(t) + ".txt"
@@ -94,6 +95,8 @@ var redObj = { red:function(){ material.color =  new THREE.Color(0xff0000) }};
 gui.add(redObj,'red');
 var blueObj = { blue:function(){ material.color =  new THREE.Color(0x0000ff) }};
 gui.add(blueObj,'blue');
+var greenObj = { green:function(){ material.color =  new THREE.Color(0x00ff00) }};
+gui.add(greenObj,'green');
 var whiteObj = { white:function(){ material.color =  new THREE.Color(0xffffff) }};
 gui.add(whiteObj,'white');
 pclFolder.open()
