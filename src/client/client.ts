@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module'
+import { PCDLoader } from 'three/examples/jsm/loaders/PCDLoader'
 import { GUI } from 'dat.gui'
 
 const scene = new THREE.Scene()
@@ -20,46 +21,74 @@ document.body.appendChild(renderer.domElement)
 
 new OrbitControls(camera, renderer.domElement)
 
-const loader = new THREE.FileLoader()
+const material = new THREE.PointsMaterial({color: 0xffffff, size:0.1})
 
-const streamGeometry = new THREE.BufferGeometry()
-
-const frameSize = 2000
-for(let t = 0; t < frameSize; t++)
+const loadPcd = true
+if(loadPcd)
 {
-    let filename = "/pcl/point_00001_0000" + String(t) + ".txt"
+    const pcdLoader = new PCDLoader()
+    const pcdFrameSize = 17
 
-    if(t >= 10 && t < 100)
-        filename = "/pcl/point_00001_000" + String(t) + ".txt"
-    else if(t >= 100 && t < 1000)
-        filename = "/pcl/point_00001_00" + String(t) + ".txt"
-    else if(t >= 1000 && t < 10000)
-        filename = "/pcl/point_00001_0" + String(t) + ".txt"
+    for(let t = 0; t < pcdFrameSize; t++)
+    {
+        let filename = "/pcd/0000" + String(t) + ".pcd"
 
-    console.log("logname = " + filename)
-    loader.load(filename,
-        // onLoad callback
-        function ( data ) {
-            // output the text to the console
-            console.log('testing yong')
-            const lines = data.toString().split("\n")
+        if(t >= 10 && t < 100)
+            filename = "/pcd/000" + String(t) + ".pcd"
 
-            const points = []
+        console.log("logname = " + filename)
 
-            for(let i = 1; i < lines.length; i++)
-            {
-                const pos = lines[i].toString().split(' ')
-
-                points.push(new THREE.Vector3(Number(pos[0]), Number(pos[1]), Number(pos[2])))
+        pcdLoader.load(filename,
+            function (points) {
+                scene.add(points);
             }
+        );
+    }
+} else {
+    const loader = new THREE.FileLoader()
 
-            streamGeometry.setFromPoints(points)
+    const streamGeometry = new THREE.BufferGeometry()
 
-            const geometry = new THREE.BufferGeometry().setFromPoints(points)
-            const point = new THREE.Points(geometry, new THREE.PointsMaterial({color: 0xffffff, size:0.1}))
-            // scene.add(point)
-        }
-    );
+    const frameSize = 2000
+
+    for(let t = 0; t < frameSize; t++)
+    {
+        let filename = "/pcl/point_00001_0000" + String(t) + ".txt"
+
+        if(t >= 10 && t < 100)
+            filename = "/pcl/point_00001_000" + String(t) + ".txt"
+        else if(t >= 100 && t < 1000)
+            filename = "/pcl/point_00001_00" + String(t) + ".txt"
+        else if(t >= 1000 && t < 10000)
+            filename = "/pcl/point_00001_0" + String(t) + ".txt"
+
+        loader.load(filename,
+            // onLoad callback
+            function ( data ) {
+                // output the text to the console
+                console.log('testing yong')
+                const lines = data.toString().split("\n")
+
+                const points = []
+
+                for(let i = 1; i < lines.length; i++)
+                {
+                    const pos = lines[i].toString().split(' ')
+
+                    points.push(new THREE.Vector3(Number(pos[0]), Number(pos[1]), Number(pos[2])))
+                }
+
+                streamGeometry.setFromPoints(points)
+
+                const geometry = new THREE.BufferGeometry().setFromPoints(points)
+                const point = new THREE.Points(geometry, new THREE.PointsMaterial({color: 0xffffff, size:0.1}))
+                // scene.add(point)
+            }
+        );
+    }
+
+    const streamPoint = new THREE.Points(streamGeometry, material)
+    scene.add(streamPoint)
 }
 
 const sphereMaterial = new THREE.MeshBasicMaterial({
@@ -69,11 +98,7 @@ const sphereMaterial = new THREE.MeshBasicMaterial({
 
 const sphereGeometry = new THREE.SphereGeometry()
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
-sphere.position.x = -2
-
-const material = new THREE.PointsMaterial({color: 0xffffff, size:0.1})
-const streamPoint = new THREE.Points(streamGeometry, material)
-scene.add(streamPoint)
+// sphere.position.x = -2
 
 console.log(scene)
 
@@ -98,10 +123,13 @@ var whiteObj = { white:function(){ material.color =  new THREE.Color(0xffffff) }
 gui.add(whiteObj,'white');
 pclFolder.open()
 const sphereFolder = gui.addFolder('Sphere')
-var onObj = { on:function(){ scene.add(sphere) }};
-gui.add(onObj,'on');
-var offObj = { off:function(){ scene.remove(sphere) }};
-gui.add(offObj,'off');
+var cbObj = { 'sphere': false}
+gui.add(cbObj,'sphere').onChange(
+    function(value) {
+        if(value) scene.add(sphere)
+        else scene.remove(sphere)
+    }
+)
 sphereFolder.open()
 const cameraFolder = gui.addFolder('Camera')
 cameraFolder.add(camera.position, 'z', 0, 10)
