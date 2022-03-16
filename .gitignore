@@ -1,2 +1,9 @@
+# node directory
 node_modules/
+
+# dist directory
 dist/
+
+# package related files
+package-lock.json
+package.json
