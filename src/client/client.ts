@@ -22,6 +22,7 @@ document.body.appendChild(renderer.domElement)
 new OrbitControls(camera, renderer.domElement)
 
 const material = new THREE.PointsMaterial({color: 0xffffff, size:0.1})
+let tmpArray : THREE.Points[]= [];
 
 const loadPcd = true
 if(loadPcd)
@@ -40,7 +41,7 @@ if(loadPcd)
 
         pcdLoader.load(filename,
             function (points) {
-                scene.add(points);
+                tmpArray.push(points)
             }
         );
     }
@@ -145,8 +146,22 @@ function animate() {
     stats.update()
 }
 
+let curr = 0;
+let prev = 0;
+
 function render() {
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
+
+    if(tmpArray.length > 1) {
+        scene.remove(tmpArray[prev]);
+        scene.add(tmpArray[curr]);
+        prev = curr;
+        curr += 1;
+
+        if(curr > 17) {
+            curr = 0;
+        }
+    }
 }
 
 animate()
